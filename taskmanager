@@ -1,0 +1,53 @@
+var waitingTasks = [];
+var queue = [];
+function setTimerTask(taskContainer)//{body:"name(parameters)", delay:number, count:number, taskID: string}
+{
+    if (taskContainer.count==1){waitingTasks.push({body:taskContainer.body, startAt: (new Date).getTime()+taskContainer.delay, taskID:taskContainer.taskID})}
+    else // taskContainer.count undef or >1
+    {
+        var nextRun = {body:taskContainer.body, delay:taskContainer.delay, taskID:taskContainer.taskID};
+        if (taskContainer.count!=undefined){nextRun.count = taskContainer.count-1};
+        taskContainer.body+='; setTimerTask('+nextRun.toSource()+')';
+        waitingTasks.push({body:taskContainer.body, startAt: (new Date).getTime()+taskContainer.delay, taskID:taskContainer.taskID})
+        }
+    }
+
+function clearTask(taskID)
+{
+    for(var i=0;i<waitingTasks.length;i++){if(waitingTasks[i].taskID==taskID){waitingTasks.splice (i,1)}}
+    for(var i=0;i<queue.length;i++){if(queue[i].taskID==taskID){queue.splice (i,1)}}
+    }
+
+/*function test (input)
+{
+    $.write(input)
+    }
+
+setTimerTask ({body:"test('1 ')", delay:500, count:20,taskID:'wr1'});
+setTimerTask ({body:"test('0 ')", delay:1000, count:10,taskID:'wr2'});
+setTimerTask ({body:"clearTask('wr1')", delay:3400, count:1});
+setTimerTask ({body:"clearTask('wr2')", delay:1100, count:1});*/
+
+while (1)
+{
+    if (exit){break outer}
+    for (var i=0; i<waitingTasks.length;i++)
+    {
+        if(waitingTasks[i].startAt<=(new Date).getTime())
+        {
+            queue.push(waitingTasks[i].body);
+            waitingTasks.splice (i,1);
+            }
+        }
+    if (queue[0]==undefined)
+    {
+        
+        $.sleep(5);
+        }
+    else while(queue[0])
+    {
+        var task = queue[0];
+        queue.splice (0,1);
+        eval(task);
+        }
+    }
